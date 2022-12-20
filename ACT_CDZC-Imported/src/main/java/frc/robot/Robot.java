@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     TiempoMatch = Timer.getMatchTime();
-    SmartDashboard.putNumber("Tiempo de la Match", TiempoMatch);
+    SmartDashboard.putNumber("TiempoMatch", TiempoMatch);
   }
 
   @Override
@@ -74,7 +74,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
 
     if(TiempoMatch<15&&TiempoMatch>13){
-      Robotcito.arcadeDrive(0, 0);
+      Robotcito.arcadeDrive(1, 0);
       Intake(true, 0.5);
       Shoot(0.5);
     }else{
