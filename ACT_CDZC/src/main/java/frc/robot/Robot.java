@@ -7,8 +7,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot extends TimedRobot {
 
@@ -31,36 +33,69 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX Msht1 = new WPI_TalonSRX(7);
   WPI_TalonSRX Msht2 = new WPI_TalonSRX(8);
 
-  DifferentialDrive Shooter = new DifferentialDrive(Msht1,Msht2);
-
+  
   // AGRUPACIÓN POR LADO
   MotorControllerGroup motoresR = new MotorControllerGroup(MR1, MR2);
   MotorControllerGroup motoresL = new MotorControllerGroup(ML1, ML2);
 
   // CHASSIS
   DifferentialDrive Robotcito = new DifferentialDrive(motoresR,motoresL);
+ 
+ //
+  double tiempomatch;
 
+ 
   //FUNCIONES 
   public void Intake(boolean state, double speed){
     Valv.set(state);
     MInt.set(speed);
   }
 
-  public void Shoot(int speed){
-    Shooter.arcadeDrive(speed,0); //No se usa el eje Z
+  public void Shoot(double speed){
+    Msht1.set(speed);
+    Msht2.set(-speed);
+
+
   }
 
   @Override
-  public void robotInit() {}
+  public void robotInit() {
+
+motoresL.setInverted(true);
+motoresR.setInverted(false);
+  }
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+
+     tiempomatch=Timer.getMatchTime();
+     SmartDashboard.putNumber("matchtime", tiempomatch);
+
+  }
 
   @Override
   public void autonomousInit() {}
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+
+    if(tiempomatch<15&&tiempomatch>10){
+
+Shoot(0.5);
+Robotcito.arcadeDrive(0.4, 0);
+Intake(true, 0.5);
+}else{
+      Intake(false, 0);
+      Shoot(0);
+      Robotcito.arcadeDrive(0.4, 0);
+
+
+    }
+
+
+
+
+  }
 
   @Override
   public void teleopInit() {}
@@ -68,7 +103,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     //ROBOT CONTROLADO (Palanca izquierda)
-    Robotcito.arcadeDrive(xbox.getRawAxis(1), xbox.getRawAxis(2));
+    Robotcito.arcadeDrive(xbox.getRawAxis(1),xbox.getRawAxis(0));
 
     //CONTROL DE INTAKE
     if(xbox.getRawButton(3)){
