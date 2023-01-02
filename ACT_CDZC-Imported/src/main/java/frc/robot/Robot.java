@@ -35,44 +35,36 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX Msht1 = new WPI_TalonSRX(7);
   WPI_TalonSRX Msht2 = new WPI_TalonSRX(8);
 
-  
+
   // AGRUPACIÓN POR LADO
   MotorControllerGroup motoresR = new MotorControllerGroup(MR1, MR2);
   MotorControllerGroup motoresL = new MotorControllerGroup(ML1, ML2);
 
   // CHASSIS
   DifferentialDrive Robotcito = new DifferentialDrive(motoresR,motoresL);
- 
- //
-  double tiempomatch;
 
- 
   //FUNCIONES 
   public void Intake(boolean state, double speed){
     Valv.set(state);
     MInt.set(speed);
   }
 
-  public void Shoot(double speed){
+  public void Shoot(Double speed){
     Msht1.set(speed);
     Msht2.set(-speed);
-
 
   }
 
   @Override
   public void robotInit() {
-
-motoresL.setInverted(true);
-motoresR.setInverted(false);
+    motoresR.setInverted(false);
+    motoresL.setInverted(true);
   }
 
   @Override
   public void robotPeriodic() {
-
-     tiempomatch=Timer.getMatchTime();
-     SmartDashboard.putNumber("matchtime", tiempomatch);
-
+    TiempoMatch = Timer.getMatchTime();
+    SmartDashboard.putNumber("TiempoMatch", TiempoMatch);
   }
 
   @Override
@@ -81,22 +73,16 @@ motoresR.setInverted(false);
   @Override
   public void autonomousPeriodic() {
 
-    if(tiempomatch<15&&tiempomatch>10){
-
-Shoot(0.5);
-Robotcito.arcadeDrive(0.4, 0);
-Intake(true, 0.5);
-}else{
+    if(TiempoMatch<15&&TiempoMatch>13){
+      Robotcito.arcadeDrive(1, 0);
+      Intake(true, 0.5);
+      Shoot(0.5);
+    }else{
+      Robotcito.arcadeDrive(0, 0);
       Intake(false, 0);
-      Shoot(0);
-      Robotcito.arcadeDrive(0.4, 0);
-
-
+      Shoot(0.0);
     }
-
-
-
-
+  
   }
 
   @Override
@@ -107,7 +93,7 @@ Intake(true, 0.5);
   @Override
   public void teleopPeriodic() {
     //ROBOT CONTROLADO (Palanca izquierda)
-    Robotcito.arcadeDrive(xbox.getRawAxis(1),xbox.getRawAxis(0));
+    Robotcito.arcadeDrive(xbox.getRawAxis(1), xbox.getRawAxis(2));
 
     //CONTROL DE INTAKE
     if(xbox.getRawButton(3)){
